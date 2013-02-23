@@ -17,6 +17,7 @@ public class Main {
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(ac);
         frame.setContentPane(panel);
+        frame.addKeyListener(ac.getKeyListener());
         frame.pack();
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);

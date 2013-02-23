@@ -27,24 +27,14 @@ public class Bitmap {
         if (x1 > w) x1 = w;
         if (y1 > h) y1 = h;
         
-        /*
         int ww = x1 - x0;
-        for (int yy = y0; yy < y1; yy++) {
-            int tp = yy * w + x0;
-            int sp = (yy - y) * bitmap.w + (x0 - x);
+        for(int yy = y0; yy < y1; yy++) {
+            int tp = yy*w + x0;
+            int sp = (yy - y)*bitmap.w + (x0 - x);
             tp -= sp;
             for (int xx = sp; xx < sp + ww; xx++) {
                 int col = bitmap.pixels[xx];
                 if (col < 0) pixels[tp + xx] = col;
-            }
-        }
-        */
-        
-        int ww = x1 - x0;
-        for(int yy = ; yy < ; yy++) {
-            
-            for(int xx = ; xx < ; xx++) {
-                
             }
         }
     }
