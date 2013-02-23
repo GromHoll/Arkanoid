@@ -1,8 +1,9 @@
 package com.GromHoll.arkanoid.entity.balls;
 
+import java.awt.Rectangle;
+
 import com.GromHoll.arkanoid.entity.Entity;
 import com.GromHoll.arkanoid.entity.IMovable;
-import com.GromHoll.arkanoid.math.BoundingBox;
 
 public abstract class Ball extends Entity implements IMovable{
     public static final int W = 10;
@@ -27,8 +28,8 @@ public abstract class Ball extends Entity implements IMovable{
     }
     
     @Override
-    public BoundingBox getBB() {
-        return new BoundingBox(x, y, x + W, y + H);
+    public Rectangle getBB() {
+        return new Rectangle((int) x, (int) y, W, H);
     }
     
 }

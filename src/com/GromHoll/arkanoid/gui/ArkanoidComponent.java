@@ -3,10 +3,12 @@ package com.GromHoll.arkanoid.gui;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.Iterator;
 
 import com.GromHoll.arkanoid.entity.Paddle;
 import com.GromHoll.arkanoid.entity.balls.Ball;
@@ -50,7 +52,7 @@ public class ArkanoidComponent extends Canvas implements Runnable {
         return new GameKeyAdapter();
     }
     
-    private void tick() {
+    private synchronized void tick() {
         if(level == null || level.isFinish()) {
             levelNum++;
             level = new Level(getLevelName());
@@ -67,6 +69,8 @@ public class ArkanoidComponent extends Canvas implements Runnable {
         }
 
         ball.move();
+        paddle.move();  
+        
         if(ball.getBB().getMaxY() >= GAME_H) {
             running = false;
             return;
@@ -76,25 +80,63 @@ public class ArkanoidComponent extends Canvas implements Runnable {
             ball.dx = -ball.dx;
         }
         
-        // TODO make correct collision 
+        if(paddle.getBB().getMinX() < X_OFFSET) {
+            paddle.x = X_OFFSET;
+        }
+        if(paddle.getBB().getMaxX() > X_OFFSET + Level.LEVEL_W*Brick.W) {
+            paddle.x = X_OFFSET + Level.LEVEL_W*Brick.W - Paddle.W;
+        }
         
+        boolean xColl = false;
+        boolean yColl = false;
         for(Brick b : level.getBricks()) {
             if(ball.getBB().intersects(b.getBB())) {
-                if(b.getBB().getMaxY() >= ball.getBB().getMaxY() && b.getBB().getMinY() <= ball.getBB().getMinY()) {
-                    ball.dx = -ball.dx;
-                } else if(b.getBB().getMaxX() >= ball.getBB().getMaxX() && b.getBB().getMinX() <= ball.getBB().getMinX()) {
-                    ball.dy = -ball.dy;
+                Rectangle r = ball.getBB().intersection(b.getBB());
+                if(r.height < r.width) {
+                    yColl = true;
+                } else if(r.height > r.width) {
+                    xColl = true;
+                } else {
+                    yColl = true;
+                    xColl = true;
                 }
+                b.hit();
+            }
+        }        
+        if(xColl)
+            ball.dx *= -1;
+        if(yColl)
+            ball.dy *= -1;
+        
+        if(ball.getBB().intersects(paddle.getBB())) {
+            Rectangle r = ball.getBB().intersection(paddle.getBB());
+            if(r.height < r.width) {
+                
+                int bc = (int) ball.getBB().getCenterX();
+                int pl = (int) paddle.getBB().getMinX();
+                if(bc <= pl + Paddle.W/4) {
+                    ball.dx = -1;
+                    ball.dy = -1;
+                } else if(bc <= pl + Paddle.W/2) {
+                    ball.dx = -0.5;
+                    ball.dy = -1.3;
+                } else if(bc <= pl + Paddle.W*3/4) {
+                    ball.dx = 0.5;
+                    ball.dy = -1.3;
+                } else {
+                    ball.dx = 1;
+                    ball.dy = -1;
+                }
+                
+            } else if(r.height >= r.width) {
+                ball.dx = -ball.dx;
             }
         }
         
-        paddle.move();
-        
-        if(ball.getBB().intersects(paddle.getBB())) {
-            if(paddle.getBB().getMaxY() >= ball.getBB().getMaxY() && paddle.getBB().getMinY() <= ball.getBB().getMinY()) {
-                ball.dx = -ball.dx;
-            } else if(paddle.getBB().getMaxX() >= ball.getBB().getMaxX() && paddle.getBB().getMinX() <= ball.getBB().getMinX()) {
-                ball.dy = -ball.dy;
+        Iterator<Brick> it = level.getBricks().iterator();
+        while(it.hasNext()) {
+            if(it.next().destroyed) {
+                it.remove();
             }
         }
         
@@ -171,4 +213,5 @@ public class ArkanoidComponent extends Canvas implements Runnable {
         }
         bs.show();
     }
+
 }

@@ -1,6 +1,7 @@
 package com.GromHoll.arkanoid.entity;
 
-import com.GromHoll.arkanoid.math.BoundingBox;
+import java.awt.Rectangle;
+
 import com.GromHoll.arkanoid.screen.Bitmap;
 
 public abstract class Entity {
@@ -17,7 +18,7 @@ public abstract class Entity {
         this.y = y;
     }
         
-    public abstract BoundingBox getBB();
+    public abstract Rectangle getBB();
     
     public abstract Bitmap getTile();
     

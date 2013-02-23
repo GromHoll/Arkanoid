@@ -11,7 +11,7 @@ public class SimpleBrick extends Brick {
     
     @Override
     public void hit() {
-        destroy();
+        destroyed = true;
     }
 
     @Override
